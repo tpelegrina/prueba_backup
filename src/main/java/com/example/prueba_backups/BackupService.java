@@ -69,8 +69,9 @@ public class BackupService {
         }
     }
 
-    @Scheduled(cron = "0 0 3 * * *") // Todos los días a las 03:00 AM
+    //@Scheduled(cron = "0 0 3 * * *") // Todos los días a las 03:00 AM
     //@Scheduled(fixedRate = 30000) // cada 30 segundos
+    @Scheduled(cron = "0 22 20 * * *")
     public void generarBackupAutomatico() {
         System.out.println("🕒 Ejecutando backup programado...");
         generarDump();
