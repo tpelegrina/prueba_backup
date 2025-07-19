@@ -5,7 +5,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,49 +29,20 @@ public class BackupService {
         return "Backup-" + timestamp + ".sql";
     }
 
-    public void testCrearArchivoDummy() {
-        String ruta = backupProperties.getDirectory();
-
-        // Crear el directorio si no existe
-        File directorio = new File(ruta);
-        if (!directorio.exists()) {
-            boolean creada = directorio.mkdirs();
-            if (!creada) {
-                System.err.println("❌ No se pudo crear el directorio de backups.");
-                return;
-            }
-        }
-
-        // Crear un archivo dummy de prueba
-        String nombreArchivo = generarNombreBackup();
-        backupRepository.save(new Backup(nombreArchivo));
-        File archivo = new File(ruta + "/" + nombreArchivo);
-
-
-        try (FileWriter writer = new FileWriter(archivo)) {
-            writer.write("Este es un archivo de prueba de backup.\n");
-            writer.write("Generado el: " + LocalDateTime.now());
-            System.out.println("✅ Archivo de prueba creado en: " + archivo.getAbsolutePath());
-        } catch (IOException e) {
-            System.err.println("❌ Error al crear el archivo de prueba: " + e.getMessage());
-        }
-    }
-
     public void generarDump() {
         String nombreArchivo = generarNombreBackup();
         String rutaCompleta = backupProperties.getDirectory() + "/" + nombreArchivo;
 
         // Configurar tus credenciales de conexión
-        String dbHost = "localhost"; // o tu host real
-        String dbPort = "3306";
-        String dbName = "turisgo_db";
-        String dbUser = "root";
-        String dbPassword = "lorax28526787";
+        String dbHost = System.getenv("MYSQLHOST");
+        String dbPort = System.getenv("MYSQLPORT");
+        String dbUser = System.getenv("MYSQLUSER");
+        String dbPassword = System.getenv("MYSQLPASSWORD");
+        String dbName = System.getenv("MYSQLDATABASE");
 
-        String mysqldumpPath = "C:/Program Files/MySQL/MySQL Server 8.0/bin/mysqldump.exe"; // ajustá la ruta
 
         List<String> comando = Arrays.asList(
-                mysqldumpPath,
+                "mysqldump",
                 "-h", dbHost,
                 "-P", dbPort,
                 "-u", dbUser,
