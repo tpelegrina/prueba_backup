@@ -9,7 +9,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BackupService {
@@ -66,6 +68,55 @@ public class BackupService {
             }
         } catch (IOException | InterruptedException e) {
             System.err.println("❌ Excepción al ejecutar mysqldump: " + e.getMessage());
+        }
+    }
+
+    public List<String> listarArchivosBackup() {
+        File carpeta = new File(backupProperties.getDirectory());
+
+        if (!carpeta.exists() || !carpeta.isDirectory()) return List.of();
+
+        String[] archivos = carpeta.list((dir, name) -> name.toLowerCase().endsWith(".sql"));
+        if (archivos == null) return List.of();
+
+        // Ordenar por fecha (alfabéticamente ya funciona con la convención Backup-YYYY-MM-DD...)
+        return Arrays.stream(archivos)
+                .sorted(Comparator.reverseOrder()) // más reciente primero
+                .collect(Collectors.toList());
+    }
+
+    public String restaurarBackup(String nombreArchivo) {
+        String ruta = backupProperties.getDirectory() + "/" + nombreArchivo;
+
+        String dbHost = System.getenv("MYSQLHOST");
+        String dbPort = System.getenv("MYSQLPORT");
+        String dbUser = System.getenv("MYSQLUSER");
+        String dbPassword = System.getenv("MYSQLPASSWORD");
+        String dbName = System.getenv("MYSQL_DATABASE");
+
+        List<String> comando = Arrays.asList(
+                "mysql",
+                "-h", dbHost,
+                "-P", dbPort,
+                "-u", dbUser,
+                "-p" + dbPassword,
+                dbName
+        );
+
+        ProcessBuilder pb = new ProcessBuilder(comando);
+        pb.redirectInput(new File(ruta));
+
+        try {
+            Process process = pb.start();
+            int exitCode = process.waitFor();
+
+            if (exitCode == 0) {
+                return "✅ Restauración completada desde: " + nombreArchivo;
+            } else {
+                return "❌ Error durante la restauración. Código de salida: " + exitCode;
+            }
+        } catch (IOException | InterruptedException e) {
+            return "❌ Excepción: " + e.getMessage();
         }
     }
 
