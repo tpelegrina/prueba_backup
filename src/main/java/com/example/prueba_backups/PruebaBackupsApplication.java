@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class PruebaBackupsApplication {
 
 	public static void main(String[] args) {
-		// Comentario de prueba
 		SpringApplication.run(PruebaBackupsApplication.class, args);
 	}
 
