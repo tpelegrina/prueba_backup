@@ -1,17 +1,26 @@
-# Imagen base con Java 17 y apt para instalar paquetes
+# Etapa 1: build del proyecto
+FROM gradle:8.5-jdk17 AS build
+
+# Copiamos todo el proyecto
+COPY --chown=gradle:gradle . /home/gradle/project
+
+WORKDIR /home/gradle/project
+
+# Compilamos el proyecto
+RUN gradle build --no-daemon
+
+# Etapa 2: imagen final para correr el app
 FROM eclipse-temurin:17-jdk
 
-# Instalamos el cliente de MySQL para tener acceso a mysqldump
+# Instalamos mysql-client para tener mysqldump
 RUN apt-get update && apt-get install -y mysql-client
 
-# Creamos el directorio de trabajo
 WORKDIR /app
 
-# Copiamos el JAR generado (ajustalo si tu JAR tiene otro nombre)
-COPY build/libs/prueba_backups-0.0.1-SNAPSHOT.jar app.jar
+# Copiamos el jar generado desde la etapa de build
+COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
 
-# Expone el puerto por si querés testear local
 EXPOSE 8080
 
-# Comando de arranque
+# Comando de ejecución
 ENTRYPOINT ["java", "-jar", "app.jar"]
