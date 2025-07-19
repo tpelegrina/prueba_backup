@@ -38,7 +38,8 @@ public class BackupService {
         String dbPort = System.getenv("MYSQLPORT");
         String dbUser = System.getenv("MYSQLUSER");
         String dbPassword = System.getenv("MYSQLPASSWORD");
-        String dbName = System.getenv("MYSQLDATABASE");
+        String dbName = System.getenv("MYSQL_DATABASE");
+
 
 
         List<String> comando = Arrays.asList(
