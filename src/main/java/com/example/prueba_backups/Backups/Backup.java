@@ -1,4 +1,4 @@
-package com.example.prueba_backups;
+package com.example.prueba_backups.Backups;
 
 import jakarta.persistence.*;
 

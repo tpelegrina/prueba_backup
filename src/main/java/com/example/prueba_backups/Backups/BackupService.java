@@ -1,4 +1,4 @@
-package com.example.prueba_backups;
+package com.example.prueba_backups.Backups;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -43,8 +43,6 @@ public class BackupService {
         String dbUser = System.getenv("MYSQLUSER");
         String dbPassword = System.getenv("MYSQLPASSWORD");
         String dbName = System.getenv("MYSQL_DATABASE");
-
-
 
         List<String> comando = Arrays.asList(
                 "mysqldump",

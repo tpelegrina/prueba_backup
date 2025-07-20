@@ -35,3 +35,11 @@ out/
 
 ### VS Code ###
 .vscode/
+
+# Ignorar archivos de configuración sensibles
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+
+# Puedes compartir archivos de ejemplo sin datos sensibles
+!src/main/resources/application-dev.properties.example
+!src/main/resources/application-prod.properties.example
