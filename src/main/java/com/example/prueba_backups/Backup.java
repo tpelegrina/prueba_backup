@@ -3,6 +3,7 @@ package com.example.prueba_backups;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 @Entity
@@ -15,13 +16,13 @@ public class Backup {
     private String filename;
 
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     public Backup() {}
 
     public Backup(String filename) {
         this.filename = filename;
-        this.createdAt = LocalDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires"));
+        this.createdAt = OffsetDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires"));
     }
 
     // Getters y setters
@@ -38,11 +39,11 @@ public class Backup {
         this.filename = filename;
     }
 
-    public LocalDateTime getCreatedAt() {
+    public OffsetDateTime getCreatedAt() {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
+    public void setCreatedAt(OffsetDateTime createdAt) {
         this.createdAt = createdAt;
     }
 }
