@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -120,11 +121,38 @@ public class BackupService {
         }
     }
 
-    //@Scheduled(cron = "0 0 3 * * *") // Todos los días a las 03:00 AM
     //@Scheduled(fixedRate = 30000) // cada 30 segundos
-    @Scheduled(cron = "0 55 20 * * *")
+    @Scheduled(cron = "0 0 3 * * *") // Todos los días a las 03:00 AM
     public void generarBackupAutomatico() {
         System.out.println("🕒 Ejecutando backup programado...");
         generarDump();
+    }
+
+    @Scheduled(fixedRate = 60000) // ⬅️ Para probar cada 60 seg
+    //@Scheduled(cron = "0 0 4 * * *") // Todos los días a las 04:00 AM
+    public void eliminarBackupsAntiguos() {
+        // Testear si anda
+        int diasLimite = 0;
+        // int diasLimite = 7;
+        List<Backup> backups = backupRepository.findAll();
+
+        for (Backup backup : backups) {
+            LocalDateTime creado = backup.getCreatedAt();
+            long dias = Duration.between(creado, LocalDateTime.now()).toDays();
+
+            if (dias > diasLimite) {
+                String path = backupProperties.getDirectory() + "/" + backup.getFilename();
+                File archivo = new File(path);
+
+                if (archivo.exists() && archivo.delete()) {
+                    System.out.println("🗑️ Archivo eliminado: " + archivo.getName());
+                } else {
+                    System.out.println("⚠️ No se pudo eliminar archivo: " + archivo.getName());
+                }
+
+                backupRepository.delete(backup);
+                System.out.println("🗃️ Registro eliminado: " + backup.getFilename());
+            }
+        }
     }
 }
