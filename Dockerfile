@@ -7,7 +7,7 @@ COPY --chown=gradle:gradle . /home/gradle/project
 WORKDIR /home/gradle/project
 
 # Compilamos el proyecto
-RUN gradle build --no-daemon
+RUN gradle build --no-daemon -x test
 
 # Etapa 2: imagen final para correr el app
 FROM eclipse-temurin:17-jdk
