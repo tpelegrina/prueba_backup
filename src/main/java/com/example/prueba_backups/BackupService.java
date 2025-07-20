@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -121,6 +122,40 @@ public class BackupService {
         }
     }
 
+    public String eliminarBackup(String filename) {
+        // Ruta completa del archivo
+        String ruta = backupProperties.getDirectory() + "/" + filename;
+        File archivo = new File(ruta);
+
+        // Intentar borrar archivo físico
+        boolean archivoEliminado = false;
+        if (archivo.exists()) {
+            archivoEliminado = archivo.delete();
+        }
+
+        // Eliminar de la base de datos
+        Optional<Backup> backupOpt = backupRepository.findAll()
+                .stream()
+                .filter(b -> b.getFilename().equals(filename))
+                .findFirst();
+
+        boolean registroEliminado = false;
+        if (backupOpt.isPresent()) {
+            backupRepository.delete(backupOpt.get());
+            registroEliminado = true;
+        }
+
+        if (archivoEliminado && registroEliminado) {
+            return "✅ Backup eliminado correctamente.";
+        } else if (!archivoEliminado && registroEliminado) {
+            return "⚠️ Registro borrado, pero no se encontró el archivo físico.";
+        } else if (archivoEliminado && !registroEliminado) {
+            return "⚠️ Archivo borrado, pero no se encontró el registro en la base de datos.";
+        } else {
+            return "❌ No se encontró el backup.";
+        }
+    }
+
     //@Scheduled(fixedRate = 30000) // cada 30 segundos
     @Scheduled(cron = "0 0 3 * * *") // Todos los días a las 03:00 AM
     public void generarBackupAutomatico() {
@@ -129,7 +164,7 @@ public class BackupService {
     }
 
     //@Scheduled(fixedRate = 60000) // ⬅️ Para probar cada 60 seg
-    @Scheduled(cron = "0 15 11 * * *") // Todos los días a las 04:00 AM
+    @Scheduled(cron = "0 32 11 * * *") // Todos los días a las 04:00 AM
     public void eliminarBackupsAntiguos() {
         // Testear si anda
         int diasLimite = 0;
@@ -140,7 +175,7 @@ public class BackupService {
             LocalDateTime creado = backup.getCreatedAt();
             long dias = Duration.between(creado, LocalDateTime.now()).toDays();
 
-            if (dias > diasLimite) {
+            if (dias >= diasLimite) {
                 String path = backupProperties.getDirectory() + "/" + backup.getFilename();
                 File archivo = new File(path);
 

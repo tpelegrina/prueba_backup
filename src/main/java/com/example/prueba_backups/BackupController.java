@@ -34,4 +34,10 @@ public class BackupController {
         String resultado = backupService.restaurarBackup(filename);
         return ResponseEntity.ok(resultado);
     }
+
+    @DeleteMapping("/eliminar/{filename}")
+    public ResponseEntity<String> eliminarBackup(@PathVariable String filename) {
+        String resultado = backupService.eliminarBackup(filename);
+        return ResponseEntity.ok(resultado);
+    }
 }
