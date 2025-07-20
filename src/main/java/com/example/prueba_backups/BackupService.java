@@ -128,12 +128,12 @@ public class BackupService {
         generarDump();
     }
 
-    @Scheduled(fixedRate = 60000) // ⬅️ Para probar cada 60 seg
+    //@Scheduled(fixedRate = 60000) // ⬅️ Para probar cada 60 seg
     //@Scheduled(cron = "0 0 4 * * *") // Todos los días a las 04:00 AM
     public void eliminarBackupsAntiguos() {
         // Testear si anda
-        int diasLimite = 0;
-        // int diasLimite = 7;
+        //int diasLimite = 0;
+        int diasLimite = 7;
         List<Backup> backups = backupRepository.findAll();
 
         for (Backup backup : backups) {
