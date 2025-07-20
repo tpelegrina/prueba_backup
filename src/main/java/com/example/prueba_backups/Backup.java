@@ -3,6 +3,7 @@ package com.example.prueba_backups;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "backups")
@@ -20,7 +21,7 @@ public class Backup {
 
     public Backup(String filename) {
         this.filename = filename;
-        this.createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now(ZoneId.of("America/Argentina/Buenos_Aires"));
     }
 
     // Getters y setters
